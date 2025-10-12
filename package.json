@@ -1,0 +1,23 @@
+{
+  "name": "backend",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShinyRaisa/backend.git"
+  },
+  "author": "shiny",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ShinyRaisa/backend/issues"
+  },
+  "homepage": "https://github.com/ShinyRaisa/backend#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
