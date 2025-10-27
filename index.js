@@ -54,6 +54,7 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :r
 // }
 // app.use(requestLogger)
 app.use(cors())
+app.use(express.static('dist'))
 app.get('/', (request, response) => {
   //Since the parameter is a string, Express automatically sets the value of the Content-Type header to be text/html
   //status defaults to 200
@@ -196,7 +197,7 @@ app.use(unknownEndpoint)
 
 
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on ${PORT}`)
 })
