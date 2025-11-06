@@ -1,21 +1,21 @@
 //const http = require("http"); //node's build in web-server module
-let notes = [
-  {
-    id: "1",
-    content: "HTML is easy",
-    important: true
-  },
-  {
-    id: "2",
-    content: "Browser can execute only JavaScript",
-    important: false
-  },
-  {
-    id: "3",
-    content: "GET and POST are the most important methods of HTTP protocol",
-    important: true
-  }
-]
+// let notes = [
+//   {
+//     id: "1",
+//     content: "HTML is easy",
+//     important: true
+//   },
+//   {
+//     id: "2",
+//     content: "Browser can execute only JavaScript",
+//     important: false
+//   },
+//   {
+//     id: "3",
+//     content: "GET and POST are the most important methods of HTTP protocol",
+//     important: true
+//   }
+// ]
 //const http = require("http"); //node's build in web-server module
 //An event handler is registered to the new server that is called every time an HTTP request is made to the server's address
 // const app = http.createServer((request, response)=>{
@@ -29,12 +29,15 @@ let notes = [
 // const PORT = 3001
 // app.listen(PORT)
 // console.log(`Server running on ${PORT}`)
-
+require('dotenv').config()
+//const Note = require('./models/note.js')
+const Persons = require('./models/persons')
 const express = require('express');
 const morgan = require('morgan')
 const cors= require('cors')
 
 const app = express();
+
 //The json-parser takes the JSON data of a request,
 //transforms it into a JavaScript object and then attaches it to the body property of the request object
 app.use(express.json())
@@ -65,26 +68,45 @@ app.get('/', (request, response) => {
 
 //defines a route event handler that handles HTTP GET requests made to the notes path of the application
 app.get('/api/notes', (request, response) => {
-  response.json(notes)
+  //response.json(notes) //was using the local var
+  Note.find({}).then(notes=>{
+    response.json(notes)
+  })
 })
 
 app.get('/api/notes/:id', (request, response) => {
-  const id = request.params.id
-  const note = notes.find(note => note.id === id)
-  if (note) {
-    response.json(note)
-  } else {
-    response.statusMessage = 'resource doesn\'t exist'
-    // response.status(404).end()
-    response.status(404)
-    response.send('resource doesn\'t exist')
-  }
+  // const id = request.params.id
+  // const note = notes.find(note => note.id === id)
+  // if (note) {
+  //   response.json(note)
+  // } else {
+  //   response.statusMessage = 'resource doesn\'t exist'
+  //   // response.status(404).end()
+  //   response.status(404)
+  //   response.send('resource doesn\'t exist')
+  // }
+
+  Note.findById(request.params.id)
+    .then((note) => {
+      if (note) {
+        response.json(note)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch((error) => next(error))
+
 })
 
 app.delete('/api/notes/:id', (request, response) => {
-  const id = request.params.id
-  notes = notes.filter(note => note.id !== id)
-  response.status(204).end();//204 no content
+  // const id = request.params.id
+  // notes = notes.filter(note => note.id !== id)
+  // response.status(204).end();//204 no content
+  Note.findByIdAndDelete(request.params.id)
+    .then((result) => {
+      response.status(204).end()
+    })
+    .catch((error) => next(error))
 })
 
 const generateId = (stuff)=>{
@@ -103,67 +125,82 @@ app.post('/api/notes',(request,response)=>{
       error: 'content missing'
     })
   }
-  const note = {
+  // const note = {
+  //   content: body.content,
+  //   important: body.important || false,
+  //   id: generateId(notes)
+  // }
+  // notes = notes.concat(note)
+  // console.log(note)
+  // response.json(note)
+  const note = new Note({
     content: body.content,
     important: body.important || false,
-    id: generateId(notes)
-  }
-  notes = notes.concat(note)
-  console.log(note)
-  response.json(note)
+  })
+
+  note.save().then((savedNote) => {
+    response.json(savedNote)
+  })
+})
+app.put('/api/notes/:id', (request, response, next) => {
+  const { content, important } = request.body
+
+  Note.findById(request.params.id)
+    .then((note) => {
+      if (!note) {
+        return response.status(404).end()
+      }
+
+      note.content = content
+      note.important = important
+
+      return note.save().then((updatedNote) => {
+        response.json(updatedNote)
+      })
+    })
+    .catch((error) => next(error))
 })
 
 
 
 
 //phonebook
-let persons= [
-  {
-    "id": "1",
-    "name": "Arto Hellas",
-    "number": "040-123456"
-  },
-  {
-    "id": "2",
-    "name": "Ada Lovelace",
-    "number": "39-44-5323523"
-  },
-  {
-    "id": "3",
-    "name": "Dan Abramov",
-    "number": "12-43-234345"
-  },
-  {
-    "id": "4",
-    "name": "Mary Poppendieck",
-    "number": "39-23-6423122"
-  }
-]
-
 app.get('/api/persons',(request,response)=>{
-  response.json(persons)
+  Persons.find({}).then(persons=>{
+    response.json(persons)
+  })
 })
 app.get('/info',(request,response)=>{
-  const personCount = persons.length
-  response.send(`<p>Phonebook has info for ${personCount} people.</p><br><p>${new Date()}</p>`)
+  // const personCount = persons.length
+  // response.send(`<p>Phonebook has info for ${personCount} people.</p><br><p>${new Date()}</p>`)
+  console.log('req')
+  Persons.find({}).then(persons=>{
+
+    console.log(persons.length)
+    //response.json(persons)
+    response.send(`<p>Phonebook has info for ${persons.length} people.</p><br><p>${new Date()}</p>`)
+  }).catch(error => {
+    console.error(error)
+    response.status(500).send('Error fetching data')
+  })
 })
 app.get('/api/persons/:id',(request,response)=>{
-  const id = request.params.id
-  const person = persons.find(p => p.id === id)
-  if (person) {
-    response.json(person)
-  } else {
-    response.statusMessage = 'resource doesn\'t exist'
-    // response.status(404).end()
-    response.status(404)
-    response.send('resource doesn\'t exist')
-  }
+  Persons.findById(request.params.id)
+    .then((person) => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch((error) => next(error))
 })
 app.delete('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  persons = persons.filter(note => note.id !== id)
-  response.send('deleted')
-  response.status(204).end();//204 no content
+  Persons.findByIdAndDelete(request.params.id)
+    .then((result) => {
+      response.status(204).end()
+    })
+    .catch((error) => next(error))
 })
 app.post('/api/persons',(request,response)=>{
   const body = request.body
@@ -173,20 +210,35 @@ app.post('/api/persons',(request,response)=>{
       error: 'content missing'
     })
   }
-  if(persons.find(p=> p.name.includes(body.name))){
-    return response.status(400).json({
-      error: 'name must be unique'
-    })
-  }
-  const person = {
+
+  const person = new Persons({
     name: body.name,
     number: body.number,
-    id: generateId(persons)
-  }
-  persons = persons.concat(person)
+  })
 
-  response.json(person)
+  person.save().then((savedPerson) => {
+    response.json(savedPerson)
+  })
 })
+app.put('/api/persons/:id', (request, response, next) => {
+  const { name, number} = request.body
+
+  Persons.findById(request.params.id)
+    .then((person) => {
+      if (!person) {
+        return response.status(404).end()
+      }
+
+      person.name = name
+      person.number = number
+
+      return person.save().then((updatedPerson) => {
+        response.json(updatedPerson)
+      })
+    })
+    .catch((error) => next(error))
+})
+
 
 //middlewares after routes if no handler is there to process the HTTP request
 //catches requests made to no-existing routes
@@ -195,8 +247,16 @@ const unknownEndpoint = (request, response)=>{
 }
 app.use(unknownEndpoint)
 
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
 
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
 
+  next(error)
+}
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
