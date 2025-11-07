@@ -30,8 +30,8 @@
 // app.listen(PORT)
 // console.log(`Server running on ${PORT}`)
 require('dotenv').config()
-//const Note = require('./models/note.js')
-const Persons = require('./models/persons')
+const Note = require('./models/note.js')
+//const Persons = require('./models/persons')
 const express = require('express');
 const morgan = require('morgan')
 const cors= require('cors')
@@ -115,7 +115,7 @@ const generateId = (stuff)=>{
 
   return String(maxId + 1)
 }
-app.post('/api/notes',(request,response)=>{
+app.post('/api/notes',(request,response,next)=>{
   //json-parser takes json data of a req transforms thats in a js obj,
   //attaches it to the body of req before route handler is called
   const body = request.body
@@ -140,7 +140,8 @@ app.post('/api/notes',(request,response)=>{
 
   note.save().then((savedNote) => {
     response.json(savedNote)
-  })
+  }).catch(error=> next(error))
+
 })
 app.put('/api/notes/:id', (request, response, next) => {
   const { content, important } = request.body
@@ -252,10 +253,14 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
+  }else if(error.name === 'ValidationError'){
+    return response.status(400).json({error: error.message})
   }
 
+ //all other error situations, the middleware passes the error forward to the default Express error handler.
   next(error)
 }
+// this has to be the last loaded middleware, also all the routes should be registered before this!
 app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001

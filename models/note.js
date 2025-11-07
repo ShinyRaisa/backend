@@ -22,7 +22,12 @@ mongoose.connect(url).then(result => {
 
 //schema tells mongoose how note objects are to be stores in the database
 const noteSchema = new mongoose.Schema({
-  content: String,
+  //minLength & required are built in validator provided by mongoose
+  content: {
+    type: String,
+    minLength: 5,
+    required: true
+  },
   important: Boolean
 })
 //toJSON is a method of th schema,The code automatically uses the defined toJSON when formatting notes to the response.
