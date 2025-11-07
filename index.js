@@ -30,8 +30,8 @@
 // app.listen(PORT)
 // console.log(`Server running on ${PORT}`)
 require('dotenv').config()
-const Note = require('./models/note.js')
-//const Persons = require('./models/persons')
+//const Note = require('./models/note.js')
+const Persons = require('./models/persons.js')
 const express = require('express');
 const morgan = require('morgan')
 const cors= require('cors')
@@ -176,7 +176,6 @@ app.get('/info',(request,response)=>{
   // response.send(`<p>Phonebook has info for ${personCount} people.</p><br><p>${new Date()}</p>`)
   console.log('req')
   Persons.find({}).then(persons=>{
-
     console.log(persons.length)
     //response.json(persons)
     response.send(`<p>Phonebook has info for ${persons.length} people.</p><br><p>${new Date()}</p>`)
@@ -203,7 +202,7 @@ app.delete('/api/persons/:id', (request, response) => {
     })
     .catch((error) => next(error))
 })
-app.post('/api/persons',(request,response)=>{
+app.post('/api/persons',(request,response,next)=>{
   const body = request.body
 
   if(!body.name || !body.number){
@@ -219,7 +218,7 @@ app.post('/api/persons',(request,response)=>{
 
   person.save().then((savedPerson) => {
     response.json(savedPerson)
-  })
+  }).catch((error) => next(error))
 })
 app.put('/api/persons/:id', (request, response, next) => {
   const { name, number} = request.body

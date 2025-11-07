@@ -22,8 +22,16 @@ mongoose.connect(url).then(result => {
 
 //schema tells mongoose how note objects are to be stores in the database
 const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minLength: 3,
+    required: true
+  },
+  number: {
+    type: String,
+    minLength: 8,
+    required: true
+  },
 })
 //toJSON is a method of th schema,The code automatically uses the defined toJSON when formatting persons to the response.
 personSchema.set('toJSON', {
