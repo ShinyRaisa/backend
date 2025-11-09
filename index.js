@@ -29,12 +29,14 @@
 // const PORT = 3001
 // app.listen(PORT)
 // console.log(`Server running on ${PORT}`)
-require('dotenv').config()
+//require('dotenv').config()
+const config= require('./utils/config')
+const logger = require('./utils/logger')
 //const Note = require('./models/note.js')
 const Persons = require('./models/persons.js')
 const express = require('express');
 const morgan = require('morgan')
-const cors= require('cors')
+const cors = require('cors')
 
 const app = express();
 
@@ -262,7 +264,8 @@ const errorHandler = (error, request, response, next) => {
 // this has to be the last loaded middleware, also all the routes should be registered before this!
 app.use(errorHandler)
 
-const PORT = process.env.PORT || 3001
+const PORT = config.PORT
+
 app.listen(PORT, () => {
-  console.log(`Server running on ${PORT}`)
+ logger.info(`Server running on ${PORT}`)
 })
