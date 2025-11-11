@@ -10,15 +10,15 @@ mongoose.set('strictQuery', false)
 //code assumes it will be passed th epw from creds created in Mongodb atlas as a command line parameter
 //const password = process.argv[2]
 //const url = `mongodb+srv://shinyr_db_user:${password}@cluster0.gyqhyam.mongodb.net/noteApp?appName=Cluster0`
-const url = process.env.MONGODB_URI_NOTES
-
-console.log('connecting to ', url)
-
-mongoose.connect(url).then(result => {
-  console.log('connected to MongoDB')
-}).catch(error => {
-  console.log('error connecting to MongoDB:', error.message)
-})
+// const url = process.env.MONGODB_URI_NOTES
+//
+// console.log('connecting to ', url)
+//
+// mongoose.connect(url).then(result => {
+//   console.log('connected to MongoDB')
+// }).catch(error => {
+//   console.log('error connecting to MongoDB:', error.message)
+// })
 
 //schema tells mongoose how note objects are to be stores in the database
 const noteSchema = new mongoose.Schema({

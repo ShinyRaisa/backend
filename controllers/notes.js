@@ -1,5 +1,5 @@
 //The module exports the router to be available for all consumers of the module
-//The router is in fact a middleware, that can be used for defining "related routes" in a single place, which is typically placed in its own module.
+//The router is a middleware, that can be used for defining "related routes" in a single place, which is typically placed in its own module.
 const notesRouter = require('express').Router()
 const Note = require('../models/note')
 
