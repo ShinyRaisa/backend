@@ -1,6 +1,35 @@
 {
+  "name": "backend",
+  "version": "0.0.1",
+  "description": "",
+  "private": true,
+  "workspaces": [
+    "Notes",
+    "Phonebook",
+    "Blog"
+  ],
   "scripts": {
     "start:notes": "cd Notes && npm start",
-    "start:phonebook": "cd Phonebook && npm start"
+    "start:phonebook": "cd Phonebook && npm start",
+    "start:blog": "cd Bloglist && npm start",
+    "build:ui": "rm -rf dist && cd ../introdemo && npm run build && cp -r dist ../backend",
+    "deploy:full": "npm run build:ui  && git add . && git commit -m uibuild && git push"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShinyRaisa/backend.git"
+  },
+  "author": "shiny",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ShinyRaisa/backend/issues"
+  },
+  "homepage": "https://github.com/ShinyRaisa/backend#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "mongoose": "^8.19.2",
+    "morgan": "^1.10.1"
   }
 }
