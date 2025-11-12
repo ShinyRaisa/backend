@@ -16,7 +16,7 @@ mongoose.connect(config.MONGODB_URI_NOTES).then(result => {
   console.log('error connecting to MongoDB:', error.message)
 })
 
-app.use(express.static('dist'))
+app.use(express.static('../dist'))
 app.use(express.json())
 app.use(middleware.requestLogger)
 
