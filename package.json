@@ -9,6 +9,7 @@
     "Blog"
   ],
   "scripts": {
+    "start": "npm run start:notes",
     "start:notes": "cd Notes && npm start",
     "start:phonebook": "cd Phonebook && npm start",
     "start:blog": "cd Bloglist && npm start",
